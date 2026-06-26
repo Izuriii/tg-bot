@@ -4765,55 +4765,38 @@ async def handle_callback_query(update: Update, context: CallbackContext):
         except:
             pass
 
-# ========== MAIN FUNCTION ==========
+# ==================== WEB SERVER FOR RENDER ====================
+from flask import Flask
+import threading
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is Alive!"
+
+def run_web_server():
+    # Ang Render ay nagbibigay ng dynamic PORT variable, kung wala, gagamit ng 8080
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
 def main():
-    """Start the bot."""
-    load_existing_data()
-    
-    application = Application.builder().token(TOKEN).build()
-    
-    # Conversation handler for encryption
-    enc_conv_handler = ConversationHandler(
-        entry_points=[CallbackQueryHandler(start_encryption, pattern="^start_encryption$")],
-        states={
-            SELECTING_ENC_METHOD: [
-                CallbackQueryHandler(handle_enc_method_callback, pattern="^enc_method_"),
-                CallbackQueryHandler(enc_handle_pagination, pattern="^enc_page_"),
-                CallbackQueryHandler(cancel_encryption, pattern="^cancel_encryption_conv$"),
-                MessageHandler(filters.TEXT & ~filters.COMMAND, select_enc_method)
-            ],
-            SELECTING_ENC_COUNT: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, select_enc_count)
-            ],
-            UPLOADING_ENC_FILE: [
-                MessageHandler(filters.Document.ALL, handle_enc_file_upload)
-            ],
-        },
-        fallbacks=[
-            CallbackQueryHandler(cancel_encryption, pattern="^cancel_encryption_conv$"),
-            CommandHandler("cancel", cancel_encryption)
-        ],
-        allow_reentry=True
-    )
-    
-    application.add_handler(enc_conv_handler)
-    
-    # Command handlers
+    # ... (Iyong mga nakaraang setup sa loob ng main gaya ng ApplicationBuilder) ...
+    application = ApplicationBuilder().token(TOKEN).build()
+
+    # Siguraduhing nandito lahat ng handlers mo kasama ang roblox
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("stats", show_stats))
-    application.add_handler(CommandHandler("help", show_help))
-    application.add_handler(CommandHandler("cancel", cancel_action))
-    
-    # Callback query handler
-    application.add_handler(CallbackQueryHandler(handle_callback_query))
-    
-    # Message handlers for various states
-    application.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'^[0-9]+$') & filters.Regex(r'^[0-9]+$'), handle_unknown_message))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_unknown_message))
-    application.add_handler(MessageHandler(filters.Document.ALL, handle_unknown_message))
-    
-    # Start the bot
-    logging.info("Bot is starting...")
+    application.add_handler(CommandHandler("roblox", roblox_command))
+    # ... (iba pang handlers mo) ...
+
+    # 1. Patakbuhin ang Flask Web Server sa background (Hiwalay na Thread)
+    logging.info("Starting Web Server for Render...")
+    server_thread = threading.Thread(target=run_web_server)
+    server_thread.daemon = True
+    server_thread.start()
+
+    # 2. Patakbuhin ang Telegram Bot
+    logging.info("Bot is starting via Polling...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
