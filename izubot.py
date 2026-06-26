@@ -4783,7 +4783,7 @@ def run_web_server():
 
 def main():
     # ... (Iyong mga nakaraang setup sa loob ng main gaya ng ApplicationBuilder) ...
-    application = Applicationbuilder().token(TOKEN).build()
+    application = ApplicationBuilder().token(TOKEN).build()
 
     # Siguraduhing nandito lahat ng handlers mo kasama ang roblox
     application.add_handler(CommandHandler("start", start))
