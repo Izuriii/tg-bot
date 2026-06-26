@@ -55,7 +55,7 @@ for directory in [USER_DROPS_DIR, LOGS_DIR, GENERATED_DIR]:
     directory.mkdir(parents=True, exist_ok=True)
 
 DATABASE_FILES = {
-    "• 100082 ( ɢᴀʀᴇɴᴀ )": "100082.txt",
+    "• garena ( ɢᴀʀᴇɴᴀ )": "garena.txt",
     "• VIP ( ɢᴀʀᴇɴᴀ )": "vip.txt",
     "• MLBB ( MLBB )": "ml.txt",
     "• authgop ( ɢᴀʀᴇɴᴀ )": "authgop.txt",
