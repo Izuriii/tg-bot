@@ -4783,11 +4783,10 @@ def run_web_server():
 
 def main():
     # ... (Iyong mga nakaraang setup sa loob ng main gaya ng ApplicationBuilder) ...
-    application = ApplicationBuilder().token(TOKEN).build()
+    application = Applicationbuilder().token(TOKEN).build()
 
     # Siguraduhing nandito lahat ng handlers mo kasama ang roblox
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("roblox", roblox_command))
     # ... (iba pang handlers mo) ...
 
     # 1. Patakbuhin ang Flask Web Server sa background (Hiwalay na Thread)
